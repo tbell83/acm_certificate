@@ -1,6 +1,5 @@
 resource "aws_acm_certificate" "certificate" {
-  count                     = "${var.count}"
-  provider                  = "aws.${var.provider}"
+  count                     = "${var.cross_account == "false" ? var.count : 0}"
   domain_name               = "${var.domain_name}"
   subject_alternative_names = ["${var.subject_alternative_names}"]
   validation_method         = "DNS"
@@ -8,18 +7,54 @@ resource "aws_acm_certificate" "certificate" {
 }
 
 resource "aws_acm_certificate_validation" "validation" {
-  count                   = "${var.count}"
-  provider                = "aws.${var.provider}"
+  count                   = "${var.cross_account == "false" ? var.count : 0}"
   certificate_arn         = "${aws_acm_certificate.certificate.arn}"
   validation_record_fqdns = ["${aws_route53_record.validation_record.fqdn}"]
 }
 
 resource "aws_route53_record" "validation_record" {
-  count    = "${var.count}"
-  provider = "aws.${var.provider}"
-  name     = "${aws_acm_certificate.certificate.domain_validation_options.0.resource_record_name}"
-  type     = "${aws_acm_certificate.certificate.domain_validation_options.0.resource_record_type}"
-  zone_id  = "${var.zone_id}"
-  records  = ["${aws_acm_certificate.certificate.domain_validation_options.0.resource_record_value}"]
+  count   = "${var.cross_account == "false" ? var.count : 0}"
+  name    = "${aws_acm_certificate.certificate.domain_validation_options.0.resource_record_name}"
+  type    = "${aws_acm_certificate.certificate.domain_validation_options.0.resource_record_type}"
+  records = ["${aws_acm_certificate.certificate.domain_validation_options.0.resource_record_value}"]
+  zone_id = "${data.aws_route53_zone.zone.zone_id}"
+  ttl     = 60
+}
+
+data "aws_route53_zone" "zone" {
+  count = "${var.cross_account == "false" ? var.count : 0}"
+  name  = "${local.domain_root}."
+}
+
+# Resources if Route53 Zone and ACM Certificate are not in the same AWS account
+resource "aws_acm_certificate" "certificate_xaccount" {
+  count                     = "${var.cross_account == "true" ? var.count : 0}"
+  provider                  = "aws.cert_owner"
+  domain_name               = "${var.domain_name}"
+  subject_alternative_names = ["${var.subject_alternative_names}"]
+  validation_method         = "DNS"
+  tags                      = "${var.tags}"
+}
+
+resource "aws_acm_certificate_validation" "validation_xaccount" {
+  count                   = "${var.cross_account == "true" ? var.count : 0}"
+  provider                = "aws.cert_owner"
+  certificate_arn         = "${aws_acm_certificate.certificate_xaccount.arn}"
+  validation_record_fqdns = ["${aws_route53_record.validation_record_xaccount.fqdn}"]
+}
+
+resource "aws_route53_record" "validation_record_xaccount" {
+  count    = "${var.cross_account == "true" ? var.count : 0}"
+  provider = "aws.zone_owner"
+  name     = "${aws_acm_certificate.certificate_xaccount.domain_validation_options.0.resource_record_name}"
+  type     = "${aws_acm_certificate.certificate_xaccount.domain_validation_options.0.resource_record_type}"
+  records  = ["${aws_acm_certificate.certificate_xaccount.domain_validation_options.0.resource_record_value}"]
+  zone_id  = "${data.aws_route53_zone.zone_xaccount.zone_id}"
   ttl      = 60
+}
+
+data "aws_route53_zone" "zone_xaccount" {
+  count    = "${var.cross_account == "true" ? var.count : 0}"
+  name     = "${local.domain_root}."
+  provider = "aws.zone_owner"
 }
