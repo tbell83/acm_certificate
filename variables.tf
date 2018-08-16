@@ -24,6 +24,6 @@ variable "subject_alternative_names" {
   default     = []
 }
 
-variable "zone_id" {
-  description = "The ID of the hosted zone to contain this record."
+variable "cross_account" {
+  default = "false"
 }
