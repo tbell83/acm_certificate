@@ -1,6 +1,6 @@
-# provider "aws" {
-#   region = "${var.provider}"
-# }
+provider "aws" {
+  region = "${var.provider}"
+}
 
 provider "aws" {
   alias = "zone_owner"
