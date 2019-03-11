@@ -11,6 +11,7 @@ variable "tags" {
 }
 
 variable "provider" {
+  default     = "unused"
   description = "provider"
 }
 
