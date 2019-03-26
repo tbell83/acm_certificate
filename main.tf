@@ -23,7 +23,7 @@ resource "aws_route53_record" "validation_record" {
 
 data "aws_route53_zone" "zone" {
   count = "${var.cross_account == "false" ? var.count : 0}"
-  name  = "${local.domain_root}."
+  name  = "${var.domain_root}"
 }
 
 # Resources if Route53 Zone and ACM Certificate are not in the same AWS account
@@ -55,6 +55,6 @@ resource "aws_route53_record" "validation_record_xaccount" {
 
 data "aws_route53_zone" "zone_xaccount" {
   count    = "${var.cross_account == "true" ? var.count : 0}"
-  name     = "${local.domain_root}."
+  name     = "${var.domain_root}"
   provider = "aws.zone_owner"
 }

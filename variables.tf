@@ -10,12 +10,12 @@ variable "tags" {
   }
 }
 
-variable "provider" {
-  description = "provider"
-}
-
 variable "domain_name" {
   description = "A domain name for which the certificate should be issued"
+}
+
+variable "domain_root" {
+  description = "The root domain name for which the certificate should be issued"
 }
 
 variable "subject_alternative_names" {

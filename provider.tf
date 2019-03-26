@@ -1,13 +1,7 @@
 provider "aws" {
-  region = "${var.provider}"
+  alias = "zone_owner"
 }
 
 provider "aws" {
-  alias  = "zone_owner"
-  region = "${var.provider}"
-}
-
-provider "aws" {
-  alias  = "cert_owner"
-  region = "${var.provider}"
+  alias = "cert_owner"
 }
