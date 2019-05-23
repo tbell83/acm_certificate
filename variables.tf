@@ -1,4 +1,4 @@
-variable "count" {
+variable "mod_count" {
   default = 1
 }
 
