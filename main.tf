@@ -1,7 +1,7 @@
 resource "aws_acm_certificate" "certificate" {
   count                     = "${var.cross_account == "false" ? var.mod_count : 0}"
   domain_name               = "${var.domain_name}"
-  subject_alternative_names = ["${var.subject_alternative_names}"]
+  subject_alternative_names = "${var.subject_alternative_names}"
   validation_method         = "DNS"
   tags                      = "${var.tags}"
 }
@@ -31,7 +31,7 @@ resource "aws_acm_certificate" "certificate_xaccount" {
   count                     = "${var.cross_account == "true" ? var.mod_count : 0}"
   provider                  = "aws.cert_owner"
   domain_name               = "${var.domain_name}"
-  subject_alternative_names = ["${var.subject_alternative_names}"]
+  subject_alternative_names = "${var.subject_alternative_names}"
   validation_method         = "DNS"
   tags                      = "${var.tags}"
 }
