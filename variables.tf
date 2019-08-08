@@ -27,3 +27,8 @@ variable "subject_alternative_names" {
 variable "cross_account" {
   default = "false"
 }
+
+variable "certificate_transparency_logging_preference" {
+  default     = "DISABLED"
+  description = "Specifies whether certificate details should be added to a certificate transparency log. Valid values are ENABLED or DISABLED. See https://docs.aws.amazon.com/acm/latest/userguide/acm-concepts.html#concept-transparency for more details."
+}

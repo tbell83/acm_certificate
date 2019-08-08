@@ -4,6 +4,10 @@ resource "aws_acm_certificate" "certificate" {
   subject_alternative_names = "${var.subject_alternative_names}"
   validation_method         = "DNS"
   tags                      = "${var.tags}"
+
+  options {
+    certificate_transparency_logging_preference = "${var.certificate_transparency_logging_preference}"
+  }
 }
 
 resource "aws_acm_certificate_validation" "validation" {
@@ -34,6 +38,10 @@ resource "aws_acm_certificate" "certificate_xaccount" {
   subject_alternative_names = "${var.subject_alternative_names}"
   validation_method         = "DNS"
   tags                      = "${var.tags}"
+
+  options {
+    certificate_transparency_logging_preference = "${var.certificate_transparency_logging_preference}"
+  }
 }
 
 resource "aws_acm_certificate_validation" "validation_xaccount" {
