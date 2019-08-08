@@ -20,8 +20,10 @@ resource "aws_route53_record" "validation_record" {
   count = "${var.cross_account == "false" ? var.mod_count : 0}"
   name = "${join(".", concat(
     [
-      split(".", join("", aws_acm_certificate.certificate.*.domain_validation_options.0.resource_record_name))[0],
-      data.aws_region.current.name,
+      join("_", [
+        split(".", join("", aws_acm_certificate.certificate.*.domain_validation_options.0.resource_record_name))[0],
+        data.aws_region.current.name,
+      ]
     ],
     slice(split(".", join("", aws_acm_certificate.certificate.*.domain_validation_options.0.resource_record_name)), 1, length(split(".", join("", aws_acm_certificate.certificate.*.domain_validation_options.0.resource_record_name))))
   ))}"
