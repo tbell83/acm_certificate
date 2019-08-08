@@ -17,16 +17,8 @@ resource "aws_acm_certificate_validation" "validation" {
 }
 
 resource "aws_route53_record" "validation_record" {
-  count = "${var.cross_account == "false" ? var.mod_count : 0}"
-  name = "${join(".", concat(
-    [
-      join("_", [
-        split(".", join("", aws_acm_certificate.certificate.*.domain_validation_options.0.resource_record_name))[0],
-        data.aws_region.current.name,
-      ])
-    ],
-    slice(split(".", join("", aws_acm_certificate.certificate.*.domain_validation_options.0.resource_record_name)), 1, length(split(".", join("", aws_acm_certificate.certificate.*.domain_validation_options.0.resource_record_name))))
-  ))}"
+  count   = "${var.cross_account == "false" ? var.mod_count : 0}"
+  name    = "${join("", aws_acm_certificate.certificate.*.domain_validation_options.0.resource_record_name)}"
   type    = "${join("", aws_acm_certificate.certificate.*.domain_validation_options.0.resource_record_type)}"
   records = ["${join("", aws_acm_certificate.certificate.*.domain_validation_options.0.resource_record_value)}"]
   zone_id = "${join("", data.aws_route53_zone.zone.*.zone_id)}"
@@ -62,17 +54,11 @@ resource "aws_acm_certificate_validation" "validation_xaccount" {
 resource "aws_route53_record" "validation_record_xaccount" {
   count    = "${var.cross_account == "true" ? var.mod_count : 0}"
   provider = "aws.zone_owner"
-  name = "${join(".", concat(
-    [
-      split(".", join("", aws_acm_certificate.certificate_xaccount.*.domain_validation_options.0.resource_record_name))[0],
-      data.aws_region.current.name,
-    ],
-    slice(split(".", join("", aws_acm_certificate.certificate_xaccount.*.domain_validation_options.0.resource_record_name)), 1, length(split(".", join("", aws_acm_certificate.certificate_xaccount.*.domain_validation_options.0.resource_record_name))))
-  ))}"
-  type    = "${join("", aws_acm_certificate.certificate_xaccount.*.domain_validation_options.0.resource_record_type)}"
-  records = ["${join("", aws_acm_certificate.certificate_xaccount.*.domain_validation_options.0.resource_record_value)}"]
-  zone_id = "${join("", data.aws_route53_zone.zone_xaccount.*.zone_id)}"
-  ttl     = 60
+  name     = "${join("", aws_acm_certificate.certificate_xaccount.*.domain_validation_options.0.resource_record_name)}"
+  type     = "${join("", aws_acm_certificate.certificate_xaccount.*.domain_validation_options.0.resource_record_type)}"
+  records  = ["${join("", aws_acm_certificate.certificate_xaccount.*.domain_validation_options.0.resource_record_value)}"]
+  zone_id  = "${join("", data.aws_route53_zone.zone_xaccount.*.zone_id)}"
+  ttl      = 60
 }
 
 data "aws_route53_zone" "zone_xaccount" {
