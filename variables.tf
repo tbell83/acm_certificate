@@ -3,7 +3,7 @@ variable "mod_count" {
 }
 
 variable "tags" {
-  type = "map"
+  type = map(string)
 
   default = {
     Managed = "acm_certificate_module"
@@ -19,7 +19,7 @@ variable "domain_root" {
 }
 
 variable "subject_alternative_names" {
-  type        = "list"
+  type        = list
   description = "A list of domains that should be SANs in the issued certificate"
   default     = []
 }
