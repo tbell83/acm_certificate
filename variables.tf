@@ -25,7 +25,8 @@ variable "subject_alternative_names" {
 }
 
 variable "cross_account" {
-  default = "false"
+  default = false
+  type    = bool
 }
 
 variable "certificate_transparency_logging_preference" {
